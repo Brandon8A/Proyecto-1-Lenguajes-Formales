@@ -5,6 +5,7 @@
 package com.mycompany.proyecto1_lf.frontend;
 
 import com.mycompany.proyecto1_lf.backend.analizadorlexicohtml.AnalizadorLexicoHtml;
+import com.mycompany.proyecto1_lf.backend.listaenlazada.ControladorTokenEstado;
 
 /**
  *
@@ -102,8 +103,9 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
         // TODO add your handling code here:
         String texto = txtAreaCodigoFuente.getText();
-        AnalizadorLexicoHtml analizadorLexico = new AnalizadorLexicoHtml(texto);
-        analizadorLexico.esEtiqueta();
+        ControladorTokenEstado tokenEstado = new ControladorTokenEstado(texto);
+//        AnalizadorLexicoHtml analizadorLexico = new AnalizadorLexicoHtml(texto);
+//        analizadorLexico.esEtiqueta();
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
     

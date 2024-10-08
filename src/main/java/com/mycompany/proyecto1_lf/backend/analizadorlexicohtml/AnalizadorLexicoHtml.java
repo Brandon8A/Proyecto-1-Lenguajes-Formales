@@ -4,6 +4,7 @@
  */
 package com.mycompany.proyecto1_lf.backend.analizadorlexicohtml;
 
+import com.mycompany.proyecto1_lf.backend.listaenlazada.ListaEnlazada;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +14,21 @@ import java.util.List;
  */
 public class AnalizadorLexicoHtml {
 
-    private List<Token> tokens = new ArrayList<>();
-    ;
+    private ListaEnlazada listaTokens = new ListaEnlazada();
     private String textoCodigo;
+    private boolean etiquetaDeUnaLinea = false;
     private int posicion;
     private char caracterActual;
-    private final String[] etiquetas = {"principal", "encabezado", "navegacion", "apartado", "listaordenada", 
+    private final String[] etiquetas = {"principal", "encabezado", "navegacion", "apartado", "listaordenada",
         "listadesordenada", "itemlista", "anclaje", "contenedor", "seccion", "articulo", "titulo", "parrafo", "span",
         "entrada", "formulario", "label", "area", "boton", "piepagina"};
     private final String[] palabrasReservadas = {"class", "=", "href", "onClick", "id", "style", "type",
         "placeholder", "required", "name"};
 
-    public AnalizadorLexicoHtml(String textoCodigo) {
+    public AnalizadorLexicoHtml(String textoCodigo, int posicion) {
         this.textoCodigo = textoCodigo;
-        posicion = 0;
-        this.caracterActual = this.textoCodigo.charAt(posicion);//obteniendo caracter de la cadena en la posicion 0
+        this.posicion = posicion;
+        this.caracterActual = this.textoCodigo.charAt(posicion);//obteniendo caracter de la cadena en la posicion madada por parametro
     }
 
     /**
@@ -45,32 +46,50 @@ public class AnalizadorLexicoHtml {
             } else if (caracterActual == '<') {
                 if (textoCodigo.startsWith("</", posicion)) {//condicion que verifica si la cadena comienza con el prefijo </
                     esEtiqueta = true;
-                    tokens.add(new Token("</"));
+                    listaTokens.agregarElemento(new Token("</"));
                     avanzarCaracter();//avanza el caracter '<'
                     avanzarCaracter();//avanza el caracter '/'
                     identificarTipoEtiqueta();//Identifica el tipo de etiqueta
                     avanzarEspaciosEnBlanco();
-                    if (caracterActual == '>' ) {
-                        tokens.add(new Token(">"));
+                    if (caracterActual == '>') {
+                        listaTokens.agregarElemento(new Token(">"));
                         System.out.println("Fin de la etiqueta de CIERRE");
+                        avanzarEspaciosEnBlanco();
+                        avanzarCaracter();
                     }
                 } else {
                     esEtiqueta = true;
-                    tokens.add(new Token("<"));
+                    listaTokens.agregarElemento(new Token("<"));
                     avanzarCaracter();//avanza el caracter '<'
                     identificarTipoEtiqueta();//Identifica el tipo de etiqueta
                     avanzarEspaciosEnBlanco();
-                    while (caracterActual != '>' && caracterActual != '\0') {
+                    while (caracterActual != '>' && caracterActual != '\0' && caracterActual != '/') {
                         identificarPalabrasReservadas();
                     }
-                    if (caracterActual == '>' ) {
-                        tokens.add(new Token(">"));
-                        System.out.println("Fin de la etiqueta de APERTURA");
+                    if (!etiquetaDeUnaLinea) {
+                        if (caracterActual == '>') {
+                            listaTokens.agregarElemento(new Token(">"));
+                            System.out.println("Fin de la etiqueta de APERTURA");
+                            avanzarEspaciosEnBlanco();
+                            avanzarCaracter();
+                        }
+                        avanzarEspaciosEnBlanco();
+                        identificarTexto();
+                    } else {
+                        if (caracterActual ==  '/') {
+                            listaTokens.agregarElemento(new Token("/>"));
+                            avanzarCaracter();//avanza el caracter '/'
+                            avanzarCaracter();//avanza el caracter '>'
+                        }
                     }
                 }
             } else {
                 System.out.println("No es etiqueta");
             }
+        }
+        System.out.println("El tamaño de la lista de tokens es: " + listaTokens.getTamaño());
+        for (int i = 0; i < listaTokens.getTamaño(); i++) {
+            System.out.print(listaTokens.obtenerValor(i).getLexema());
         }
         return esEtiqueta;
     }
@@ -87,8 +106,15 @@ public class AnalizadorLexicoHtml {
         for (int i = 0; i < etiquetas.length; i++) {
             if (resultado.toString().equals(etiquetas[i])) {
                 System.out.println("La etiqueta es: " + etiquetas[i]);
-                tokens.add(new Token(traducirEtiqueta(etiquetas[i])));
-                tokens.add(new Token(" "));
+                listaTokens.agregarElemento(new Token(traducirEtiqueta(etiquetas[i])));
+                if (resultado.toString().equals("area") || resultado.toString().equals("entrada")) {
+                    etiquetaDeUnaLinea = true;
+                } else {
+                    etiquetaDeUnaLinea = false;
+                }
+                if (caracterActual == ' ') {
+                    listaTokens.agregarElemento(new Token(" "));
+                }
                 break;
             }
         }
@@ -96,10 +122,12 @@ public class AnalizadorLexicoHtml {
 
     /**
      * Funcion que permite la traduccion de las etiquetas del codigo fuente
-     * @param etiquetaATraducir recibe el texto de la etiqueta que se desea traducir
+     *
+     * @param etiquetaATraducir recibe el texto de la etiqueta que se desea
+     * traducir
      * @return devuelve en texto la etiqueta ya traducida
      */
-    private String traducirEtiqueta(String etiquetaATraducir){
+    private String traducirEtiqueta(String etiquetaATraducir) {
         String etiquetaTraducida = "";
         switch (etiquetaATraducir) {
             case "prinicipal":
@@ -162,13 +190,14 @@ public class AnalizadorLexicoHtml {
             case "piepagina":
                 etiquetaTraducida = "footer";
                 break;
-            
+
         }
         return etiquetaTraducida;
     }
-    
+
     /**
-     * Metodo que avanza los todos los espacios en blanco hasta encontrar un caracter diferente de espacio en blanco
+     * Metodo que avanza los todos los espacios en blanco hasta encontrar un
+     * caracter diferente de espacio en blanco
      */
     private void avanzarEspaciosEnBlanco() {
         while (caracterActual == ' ') {
@@ -193,18 +222,18 @@ public class AnalizadorLexicoHtml {
         for (int i = 0; i < palabrasReservadas.length; i++) {
             if (resultado.toString().equals(palabrasReservadas[i])) {
                 System.out.println("Palabra reservada: " + palabrasReservadas[i]);
-                tokens.add(new Token(palabrasReservadas[i]));
+                listaTokens.agregarElemento(new Token(palabrasReservadas[i]));
                 break;
             }
         }
         if (!saltarSignoIgual) {
             if (caracterActual == '=') {
-                tokens.add(new Token("="));
+                listaTokens.agregarElemento(new Token("="));
                 System.out.println("Palabra reservada es: '='");
                 avanzarCaracter();
                 avanzarEspaciosEnBlanco();
                 if (caracterActual == '"') {
-                    tokens.add(new Token(String.valueOf(caracterActual)));
+                    listaTokens.agregarElemento(new Token(String.valueOf(caracterActual)));
                     avanzarCaracter();
                     almacenarCadena();
                 }
@@ -218,11 +247,33 @@ public class AnalizadorLexicoHtml {
             resultado.append(caracterActual);
             avanzarCaracter();
         }
-        tokens.add(new Token(resultado.toString()));
+        listaTokens.agregarElemento(new Token(resultado.toString()));
+        listaTokens.agregarElemento(new Token(String.valueOf(caracterActual)));
         avanzarCaracter();//avanzar caracter '"'
+        avanzarEspaciosEnBlanco();
+        if (caracterActual != '>') {
+            listaTokens.agregarElemento(new Token(" "));
+        }
         System.out.println("LA CADENA ES: " + resultado.toString());
         avanzarEspaciosEnBlanco();
     }
+
+    /**
+     * Identifica el texto que se encuentra entre una etiqueta de apertura,
+     * afuera de las propiedades de las propiedades de esta etiqueta de
+     * apertura, y afuera de una etiqueta de cierre
+     */
+    private void identificarTexto() {
+        StringBuilder texto = new StringBuilder();
+        while (caracterActual != '<' && caracterActual != '\0') {
+            texto.append(caracterActual);
+            avanzarCaracter();
+        }
+        listaTokens.agregarElemento(new Token(texto.toString()));
+        System.out.println("El texto entre ambas etiquetas (apertura y cierre) es: " + texto.toString());
+        avanzarEspaciosEnBlanco();
+    }
+
     /**
      * Metodo que permite avanzar de caracter en caracter de un texto
      */
