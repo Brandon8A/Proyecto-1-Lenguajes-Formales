@@ -4,9 +4,7 @@
  */
 package com.mycompany.proyecto1_lf.backend.analizadorlexicohtml;
 
-import com.mycompany.proyecto1_lf.backend.listaenlazada.ListaEnlazada;
-import java.util.ArrayList;
-import java.util.List;
+import com.mycompany.proyecto1_lf.backend.listaenlazada.ControladorTokenEstado;
 
 /**
  *
@@ -14,52 +12,46 @@ import java.util.List;
  */
 public class AnalizadorLexicoHtml {
 
-    private ListaEnlazada listaTokens = new ListaEnlazada();
     private String textoCodigo;
     private boolean etiquetaDeUnaLinea = false;
     private int posicion;
     private char caracterActual;
+    private ControladorTokenEstado controladorTokenEstado;
     private final String[] etiquetas = {"principal", "encabezado", "navegacion", "apartado", "listaordenada",
         "listadesordenada", "itemlista", "anclaje", "contenedor", "seccion", "articulo", "titulo", "parrafo", "span",
         "entrada", "formulario", "label", "area", "boton", "piepagina"};
     private final String[] palabrasReservadas = {"class", "=", "href", "onClick", "id", "style", "type",
         "placeholder", "required", "name"};
 
-    public AnalizadorLexicoHtml(String textoCodigo, int posicion) {
+    public AnalizadorLexicoHtml(String textoCodigo, int posicion, ControladorTokenEstado controladorTokenEstado) {
         this.textoCodigo = textoCodigo;
         this.posicion = posicion;
+        this.controladorTokenEstado = controladorTokenEstado;
         this.caracterActual = this.textoCodigo.charAt(posicion);//obteniendo caracter de la cadena en la posicion madada por parametro
     }
 
     /**
-     * Funcion que permite verificar si el caracter a evaluar es una etiqueta
-     * html
-     *
-     * @return verdadero si es etiqueta de lo contrario devuelve falso(no es
-     * etiqueta)
+     * Funcion que permite verificar si el caracter a evaluar es una etiqueta html
      */
-    public boolean esEtiqueta() {
-        boolean esEtiqueta = false;
-        while (caracterActual != '\0') {
+    public void esEtiqueta() {
+        while (caracterActual != '\0' && !cambiarTokenEstado()) {
             if (Character.isWhitespace(caracterActual)) {
                 avanzarCaracter();
             } else if (caracterActual == '<') {
                 if (textoCodigo.startsWith("</", posicion)) {//condicion que verifica si la cadena comienza con el prefijo </
-                    esEtiqueta = true;
-                    listaTokens.agregarElemento(new Token("</"));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token("</"));
                     avanzarCaracter();//avanza el caracter '<'
                     avanzarCaracter();//avanza el caracter '/'
                     identificarTipoEtiqueta();//Identifica el tipo de etiqueta
                     avanzarEspaciosEnBlanco();
                     if (caracterActual == '>') {
-                        listaTokens.agregarElemento(new Token(">"));
+                        controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(">"));
                         System.out.println("Fin de la etiqueta de CIERRE");
                         avanzarEspaciosEnBlanco();
                         avanzarCaracter();
                     }
                 } else {
-                    esEtiqueta = true;
-                    listaTokens.agregarElemento(new Token("<"));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token("<"));
                     avanzarCaracter();//avanza el caracter '<'
                     identificarTipoEtiqueta();//Identifica el tipo de etiqueta
                     avanzarEspaciosEnBlanco();
@@ -68,16 +60,16 @@ public class AnalizadorLexicoHtml {
                     }
                     if (!etiquetaDeUnaLinea) {
                         if (caracterActual == '>') {
-                            listaTokens.agregarElemento(new Token(">"));
+                            controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(">"));
                             System.out.println("Fin de la etiqueta de APERTURA");
                             avanzarEspaciosEnBlanco();
-                            avanzarCaracter();
+                            avanzarCaracter();//avanza el caracter '>'
                         }
                         avanzarEspaciosEnBlanco();
                         identificarTexto();
                     } else {
                         if (caracterActual ==  '/') {
-                            listaTokens.agregarElemento(new Token("/>"));
+                            controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token("/>"));
                             avanzarCaracter();//avanza el caracter '/'
                             avanzarCaracter();//avanza el caracter '>'
                         }
@@ -87,11 +79,11 @@ public class AnalizadorLexicoHtml {
                 System.out.println("No es etiqueta");
             }
         }
-        System.out.println("El tamaño de la lista de tokens es: " + listaTokens.getTamaño());
-        for (int i = 0; i < listaTokens.getTamaño(); i++) {
-            System.out.print(listaTokens.obtenerValor(i).getLexema());
-        }
-        return esEtiqueta;
+//        for (int i = 0; i < listaTokens.getTamaño(); i++) {
+//            System.out.print(listaTokens.obtenerValor(i).getLexema());
+//        }
+        controladorTokenEstado.setPosicion(posicion);
+        controladorTokenEstado.setCaracterActual(caracterActual);
     }
 
     /**
@@ -106,14 +98,14 @@ public class AnalizadorLexicoHtml {
         for (int i = 0; i < etiquetas.length; i++) {
             if (resultado.toString().equals(etiquetas[i])) {
                 System.out.println("La etiqueta es: " + etiquetas[i]);
-                listaTokens.agregarElemento(new Token(traducirEtiqueta(etiquetas[i])));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(traducirEtiqueta(etiquetas[i])));
                 if (resultado.toString().equals("area") || resultado.toString().equals("entrada")) {
                     etiquetaDeUnaLinea = true;
                 } else {
                     etiquetaDeUnaLinea = false;
                 }
                 if (caracterActual == ' ') {
-                    listaTokens.agregarElemento(new Token(" "));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" "));
                 }
                 break;
             }
@@ -222,18 +214,18 @@ public class AnalizadorLexicoHtml {
         for (int i = 0; i < palabrasReservadas.length; i++) {
             if (resultado.toString().equals(palabrasReservadas[i])) {
                 System.out.println("Palabra reservada: " + palabrasReservadas[i]);
-                listaTokens.agregarElemento(new Token(palabrasReservadas[i]));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(palabrasReservadas[i]));
                 break;
             }
         }
         if (!saltarSignoIgual) {
             if (caracterActual == '=') {
-                listaTokens.agregarElemento(new Token("="));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token("="));
                 System.out.println("Palabra reservada es: '='");
                 avanzarCaracter();
                 avanzarEspaciosEnBlanco();
                 if (caracterActual == '"') {
-                    listaTokens.agregarElemento(new Token(String.valueOf(caracterActual)));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(String.valueOf(caracterActual)));
                     avanzarCaracter();
                     almacenarCadena();
                 }
@@ -247,12 +239,12 @@ public class AnalizadorLexicoHtml {
             resultado.append(caracterActual);
             avanzarCaracter();
         }
-        listaTokens.agregarElemento(new Token(resultado.toString()));
-        listaTokens.agregarElemento(new Token(String.valueOf(caracterActual)));
+        controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(resultado.toString()));
+        controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(String.valueOf(caracterActual)));
         avanzarCaracter();//avanzar caracter '"'
         avanzarEspaciosEnBlanco();
         if (caracterActual != '>') {
-            listaTokens.agregarElemento(new Token(" "));
+            controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" "));
         }
         System.out.println("LA CADENA ES: " + resultado.toString());
         avanzarEspaciosEnBlanco();
@@ -269,11 +261,19 @@ public class AnalizadorLexicoHtml {
             texto.append(caracterActual);
             avanzarCaracter();
         }
-        listaTokens.agregarElemento(new Token(texto.toString()));
+        controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(texto.toString()));
         System.out.println("El texto entre ambas etiquetas (apertura y cierre) es: " + texto.toString());
         avanzarEspaciosEnBlanco();
     }
 
+    private boolean cambiarTokenEstado(){
+        if (textoCodigo.startsWith(">>", posicion)) {
+            System.out.println("Cambiar token estado");
+            return true;
+        } else {
+            return false;
+        }
+    }
     /**
      * Metodo que permite avanzar de caracter en caracter de un texto
      */

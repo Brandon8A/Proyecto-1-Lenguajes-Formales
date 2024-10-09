@@ -4,6 +4,7 @@
  */
 package com.mycompany.proyecto1_lf.backend.listaenlazada;
 
+import com.mycompany.proyecto1_lf.backend.ArchivoHTML;
 import com.mycompany.proyecto1_lf.backend.analizadorlexicohtml.AnalizadorLexicoHtml;
 
 /**
@@ -18,6 +19,9 @@ public class ControladorTokenEstado {
     private String textoCodigo;
     private int posicion;
     private char caracterActual;
+    private ListaEnlazada listaTokensHTML = new ListaEnlazada();
+    private ListaEnlazada listaEnlazadaCSS = new ListaEnlazada();
+    private ListaEnlazada listaEnlazadaJS = new ListaEnlazada();
 
     public ControladorTokenEstado(String texto) {
         this.textoCodigo = texto;
@@ -39,9 +43,9 @@ public class ControladorTokenEstado {
                     tokenEstado = identificarTokenEstado();
                     if (tokenEstado.equals(TOKEN_ESTADO_HTML)) {
                         System.out.println("El token estado es: HTML");
-                        AnalizadorLexicoHtml analizadorLexicoHtml = new AnalizadorLexicoHtml(textoCodigo, posicion);
+                        AnalizadorLexicoHtml analizadorLexicoHtml = new AnalizadorLexicoHtml(textoCodigo, posicion, this);
+                        analizadorLexicoHtml.esEtiqueta();
                         System.out.println("caracter actual: "+caracterActual);
-                        avanzarCaracter();
                     }else if (tokenEstado.equals(TOKEN_ESTADO_CSS)) {
                         System.out.println("El token estado es: CSS");
                     } else {
@@ -73,8 +77,14 @@ public class ControladorTokenEstado {
             } else {
             }
         }
+        ArchivoHTML archivoHTML = new ArchivoHTML(this);
+        archivoHTML.escribirCodigoHTML(listaTokensHTML);
     }
     
+    /**
+     * Funcion que permite verificar el tipo de token de estado el cual se va a analizar para su traduccion
+     * @return retorna el nombre del lenguaje a analizar
+     */
     private String identificarTokenEstado(){
         StringBuilder texto = new StringBuilder();
         while (caracterActual != ']' && caracterActual != ' ' && caracterActual != '\0') {            
@@ -93,4 +103,33 @@ public class ControladorTokenEstado {
             caracterActual = '\0'; //indicando final del texto
         }
     }
+
+    public int getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
+    }
+
+    public char getCaracterActual() {
+        return caracterActual;
+    }
+
+    public void setCaracterActual(char caracterActual) {
+        this.caracterActual = caracterActual;
+    }
+
+    public ListaEnlazada getListaTokensHTML() {
+        return listaTokensHTML;
+    }
+
+    public ListaEnlazada getListaEnlazadaCSS() {
+        return listaEnlazadaCSS;
+    }
+
+    public ListaEnlazada getListaEnlazadaJS() {
+        return listaEnlazadaJS;
+    }
+    
 }
