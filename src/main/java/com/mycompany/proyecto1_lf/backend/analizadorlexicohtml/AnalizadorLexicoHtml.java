@@ -4,6 +4,7 @@
  */
 package com.mycompany.proyecto1_lf.backend.analizadorlexicohtml;
 
+import com.mycompany.proyecto1_lf.backend.Token;
 import com.mycompany.proyecto1_lf.backend.listaenlazada.ControladorTokenEstado;
 
 /**
@@ -31,9 +32,9 @@ public class AnalizadorLexicoHtml {
     }
 
     /**
-     * Funcion que permite verificar si el caracter a evaluar es una etiqueta html
+     * Metodo que permite el analisis del codigo de html
      */
-    public void esEtiqueta() {
+    public void analizarCodigoHtml() {
         while (caracterActual != '\0' && !cambiarTokenEstado()) {
             if (Character.isWhitespace(caracterActual)) {
                 avanzarCaracter();

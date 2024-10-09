@@ -4,7 +4,7 @@
  */
 package com.mycompany.proyecto1_lf.backend.listaenlazada;
 
-import com.mycompany.proyecto1_lf.backend.analizadorlexicohtml.Token;
+import com.mycompany.proyecto1_lf.backend.Token;
 
 /**
  *

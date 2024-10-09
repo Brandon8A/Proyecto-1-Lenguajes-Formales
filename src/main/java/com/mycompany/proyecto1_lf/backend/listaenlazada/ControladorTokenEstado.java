@@ -5,6 +5,7 @@
 package com.mycompany.proyecto1_lf.backend.listaenlazada;
 
 import com.mycompany.proyecto1_lf.backend.ArchivoHTML;
+import com.mycompany.proyecto1_lf.backend.analizadorlexicocss.AnalizadorLexicoCss;
 import com.mycompany.proyecto1_lf.backend.analizadorlexicohtml.AnalizadorLexicoHtml;
 
 /**
@@ -44,10 +45,12 @@ public class ControladorTokenEstado {
                     if (tokenEstado.equals(TOKEN_ESTADO_HTML)) {
                         System.out.println("El token estado es: HTML");
                         AnalizadorLexicoHtml analizadorLexicoHtml = new AnalizadorLexicoHtml(textoCodigo, posicion, this);
-                        analizadorLexicoHtml.esEtiqueta();
+                        analizadorLexicoHtml.analizarCodigoHtml();
                         System.out.println("caracter actual: "+caracterActual);
                     }else if (tokenEstado.equals(TOKEN_ESTADO_CSS)) {
                         System.out.println("El token estado es: CSS");
+                        AnalizadorLexicoCss analizadorLexicoCss = new AnalizadorLexicoCss(textoCodigo, posicion, this);
+                        analizadorLexicoCss.analizarCodigoCss();
                     } else {
                         System.out.println("El token estado es: JS");
                     }
