@@ -40,6 +40,8 @@ public class ControladorTokenEstado {
                     if (tokenEstado.equals(TOKEN_ESTADO_HTML)) {
                         System.out.println("El token estado es: HTML");
                         AnalizadorLexicoHtml analizadorLexicoHtml = new AnalizadorLexicoHtml(textoCodigo, posicion);
+                        System.out.println("caracter actual: "+caracterActual);
+                        avanzarCaracter();
                     }else if (tokenEstado.equals(TOKEN_ESTADO_CSS)) {
                         System.out.println("El token estado es: CSS");
                     } else {
