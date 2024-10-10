@@ -68,6 +68,9 @@ public class AnalizadorLexicoCss {
             } else if (caracterActual == '\'') {
                 controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("'"));
                 leerCadena();
+            } else if (Character.isDigit(caracterActual)) {
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(String.valueOf(caracterActual)));
+                avanzarCaracter();
             } else {
                 identificarSelectorEtiqueta();
             }
@@ -148,7 +151,7 @@ public class AnalizadorLexicoCss {
                     controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
                     avanzarEspaciosEnBlanco();
                     identificarSelectorCombinador();
-                }else if (caracterActual == '\n') {
+                } else if (caracterActual == '\n') {
                     controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("\n"));
                     avanzarCaracter();//avanza el caracter '\n'
                 }
@@ -196,9 +199,9 @@ public class AnalizadorLexicoCss {
     private void identificadorSelectorID() {
         boolean buscarEnColores = true;
         StringBuilder texto = new StringBuilder();
-        while (posicion < textoCodigo.length() && (Character.isLetterOrDigit(textoCodigo.charAt(posicion))
+        while (posicion < textoCodigo.length() && caracterActual != ';' && (Character.isLetterOrDigit(textoCodigo.charAt(posicion))
                 || textoCodigo.charAt(posicion) == '-' || textoCodigo.charAt(posicion) == '#'
-                || textoCodigo.charAt(posicion) != ' ' || textoCodigo.charAt(posicion) != ';')) {
+                || textoCodigo.charAt(posicion) != ' ')) {
             texto.append(caracterActual);
             avanzarCaracter();
         }
