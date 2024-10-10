@@ -38,7 +38,7 @@ public class ArchivoHTML {
     private String obtenerDataActual() {
         if (!archivoHTML.exists()) {
             return """
-                   <!Doctype html>
+                   <!DOCTYPE html>
                    <html lang="en">
                    <head>
                         <meta charset="UTF-8">
