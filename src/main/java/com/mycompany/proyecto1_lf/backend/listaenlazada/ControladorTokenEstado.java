@@ -81,7 +81,7 @@ public class ControladorTokenEstado {
             }
         }
         ArchivoHTML archivoHTML = new ArchivoHTML(this);
-        archivoHTML.escribirCodigoHTML(listaTokensHTML);
+        archivoHTML.escribirCodigo(listaEnlazadaCSS);
     }
     
     /**

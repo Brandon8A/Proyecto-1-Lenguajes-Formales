@@ -20,33 +20,53 @@ import java.io.IOException;
 public class ArchivoHTML {
     
     private File archivoHTML = new File("archivo.html");
-
     private ControladorTokenEstado controladorTokenEstado;
+    private String codigo;
     
     public ArchivoHTML(ControladorTokenEstado controladorTokenEstado) {
         this.controladorTokenEstado = controladorTokenEstado;
     }
     
-    public void escribirCodigoHTML(ListaEnlazada listaEnlazadaHtml){
-        String data = obtenerDataActual();
-        for (int i = 0; i < controladorTokenEstado.getListaTokensHTML().getTamaño(); i++) {
-            data = data + String.format("%s", controladorTokenEstado.getListaTokensHTML().obtenerValor(i).getLexema());
+    public void escribirCodigo(ListaEnlazada listaEnlazadaCSS){
+        codigo = obtenerDataActual();
+        for (int i = 0; i < controladorTokenEstado.getListaEnlazadaCSS().getTamaño(); i++) {
+            codigo = codigo + String.format("%s", controladorTokenEstado.getListaEnlazadaCSS().obtenerValor(i).getLexema());
         }
-        escribirEnArchivo(data);
+        agregarCodigoJS(controladorTokenEstado.getListaEnlazadaJS());
     }
     
     private String obtenerDataActual() {
         if (!archivoHTML.exists()) {
             return """
-                   <html>
+                   <!Doctype html>
+                   <html lang="en">
                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
                    	<title>Document</title>
-                   </head>
-                   <body>
+                        <style>
                    """;
         }
         return leerArchivo();
     }
+    
+    private void agregarCodigoJS(ListaEnlazada listaEnlazadaJS){
+        codigo = codigo + "\n</style>\n<script>";
+        for (int i = 0; i < listaEnlazadaJS.getTamaño(); i++) {
+            codigo = codigo + String.format("%s", controladorTokenEstado.getListaEnlazadaCSS().obtenerValor(i).getLexema());
+        }
+        agregarCodigoHTML(controladorTokenEstado.getListaTokensHTML());
+    }
+    
+    public void agregarCodigoHTML(ListaEnlazada listaEnlazadaHtml){
+        codigo = codigo + "\n</script>\n</head>\n<body>";
+        for (int i = 0; i < listaEnlazadaHtml.getTamaño(); i++) {
+            codigo = codigo + String.format("%s", listaEnlazadaHtml.obtenerValor(i).getLexema());
+        }
+        escribirEnArchivo(codigo);
+    }
+    
+    
     
     private String leerArchivo() {
         String contenido = "";
