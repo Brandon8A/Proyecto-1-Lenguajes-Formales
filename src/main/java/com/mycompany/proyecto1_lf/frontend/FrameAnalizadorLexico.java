@@ -17,7 +17,6 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
      */
     public FrameAnalizadorLexico() {
         initComponents();
-        btnGenerarHtml.setEnabled(false);
     }
 
     /**
@@ -33,7 +32,6 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaCodigoFuente = new javax.swing.JTextArea();
         btnAnalizar = new javax.swing.JButton();
-        btnGenerarHtml = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,24 +46,18 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
             }
         });
 
-        btnGenerarHtml.setText("Generar Html");
-
         javax.swing.GroupLayout pnlAnalizadorLexicoLayout = new javax.swing.GroupLayout(pnlAnalizadorLexico);
         pnlAnalizadorLexico.setLayout(pnlAnalizadorLexicoLayout);
         pnlAnalizadorLexicoLayout.setHorizontalGroup(
             pnlAnalizadorLexicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlAnalizadorLexicoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlAnalizadorLexicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlAnalizadorLexicoLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())
-                    .addGroup(pnlAnalizadorLexicoLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
-                        .addComponent(btnAnalizar)
-                        .addGap(175, 175, 175)
-                        .addComponent(btnGenerarHtml)
-                        .addGap(197, 197, 197))))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(pnlAnalizadorLexicoLayout.createSequentialGroup()
+                .addGap(324, 324, 324)
+                .addComponent(btnAnalizar)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlAnalizadorLexicoLayout.setVerticalGroup(
             pnlAnalizadorLexicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -73,9 +65,7 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlAnalizadorLexicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGenerarHtml)
-                    .addComponent(btnAnalizar))
+                .addComponent(btnAnalizar)
                 .addContainerGap())
         );
 
@@ -102,13 +92,12 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
         // TODO add your handling code here:
         String texto = txtAreaCodigoFuente.getText();
-        ControladorTokenEstado tokenEstado = new ControladorTokenEstado(texto);
+        ControladorTokenEstado tokenEstado = new ControladorTokenEstado(texto, this);
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAnalizar;
-    private javax.swing.JButton btnGenerarHtml;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnlAnalizadorLexico;
     private javax.swing.JTextArea txtAreaCodigoFuente;

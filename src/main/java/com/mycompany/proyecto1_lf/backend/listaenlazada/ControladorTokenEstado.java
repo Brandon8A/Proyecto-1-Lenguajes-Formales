@@ -7,6 +7,8 @@ package com.mycompany.proyecto1_lf.backend.listaenlazada;
 import com.mycompany.proyecto1_lf.backend.ArchivoHTML;
 import com.mycompany.proyecto1_lf.backend.analizadorlexicocss.AnalizadorLexicoCss;
 import com.mycompany.proyecto1_lf.backend.analizadorlexicohtml.AnalizadorLexicoHtml;
+import com.mycompany.proyecto1_lf.frontend.FrameAnalizadorLexico;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,14 +20,16 @@ public class ControladorTokenEstado {
     private final String TOKEN_ESTADO_JAVASCRIPT="js";
     
     private String textoCodigo;
+    private FrameAnalizadorLexico frameAnalizadorLexico;
     private int posicion;
     private char caracterActual;
     private ListaEnlazada listaTokensHTML = new ListaEnlazada();
     private ListaEnlazada listaEnlazadaCSS = new ListaEnlazada();
     private ListaEnlazada listaEnlazadaJS = new ListaEnlazada();
 
-    public ControladorTokenEstado(String texto) {
+    public ControladorTokenEstado(String texto, FrameAnalizadorLexico frameAnalizadorLexico) {
         this.textoCodigo = texto;
+        this.frameAnalizadorLexico = frameAnalizadorLexico;
         this.posicion = 0;
         this.caracterActual = this.textoCodigo.charAt(posicion);
         analizarTokenEstado();
@@ -82,6 +86,7 @@ public class ControladorTokenEstado {
         }
         ArchivoHTML archivoHTML = new ArchivoHTML(this);
         archivoHTML.escribirCodigo(listaEnlazadaCSS);
+        JOptionPane.showMessageDialog(this.frameAnalizadorLexico, "Archivo generado en la carpeta raiz del proyecto.");
     }
     
     /**
