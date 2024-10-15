@@ -11,6 +11,7 @@ import com.mycompany.proyecto1_lf.backend.listaenlazada.ControladorTokenEstado;
  * @author brandon
  */
 public class FrameAnalizadorLexico extends javax.swing.JFrame {
+    ControladorTokenEstado controladorTokenEstado;
 
     /**
      * Creates new form FrameAnalizadorLexico
@@ -32,6 +33,9 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaCodigoFuente = new javax.swing.JTextArea();
         btnAnalizar = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        subMenuReporteTokens = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,11 +67,25 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
             pnlAnalizadorLexicoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlAnalizadorLexicoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnAnalizar)
                 .addContainerGap())
         );
+
+        jMenu1.setText("Reportes");
+
+        subMenuReporteTokens.setText("Reporte de Tokens");
+        subMenuReporteTokens.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                subMenuReporteTokensActionPerformed(evt);
+            }
+        });
+        jMenu1.add(subMenuReporteTokens);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -91,15 +109,26 @@ public class FrameAnalizadorLexico extends javax.swing.JFrame {
 
     private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
         // TODO add your handling code here:
-        String texto = txtAreaCodigoFuente.getText();
-        ControladorTokenEstado tokenEstado = new ControladorTokenEstado(texto, this);
+        String texto = txtAreaCodigoFuente.getText();//Extrauyendo texto del area de texto
+//        ControladorTokenEstado tokenEstado = new ControladorTokenEstado(texto, this);
+        this.controladorTokenEstado = new ControladorTokenEstado(texto, this);
     }//GEN-LAST:event_btnAnalizarActionPerformed
+
+    private void subMenuReporteTokensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subMenuReporteTokensActionPerformed
+        // TODO add your handling code here:
+        DialogFormReportesTokens dialogFormReportesTokens = new DialogFormReportesTokens(this, true, controladorTokenEstado);
+        dialogFormReportesTokens.setLocationRelativeTo(null);
+        dialogFormReportesTokens.setVisible(true);
+    }//GEN-LAST:event_subMenuReporteTokensActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAnalizar;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel pnlAnalizadorLexico;
+    private javax.swing.JMenuItem subMenuReporteTokens;
     private javax.swing.JTextArea txtAreaCodigoFuente;
     // End of variables declaration//GEN-END:variables
 }

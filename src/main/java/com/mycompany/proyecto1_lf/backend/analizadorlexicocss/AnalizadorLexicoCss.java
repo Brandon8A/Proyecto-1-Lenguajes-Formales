@@ -53,23 +53,23 @@ public class AnalizadorLexicoCss {
     public void analizarCodigoCss() {
         while (caracterActual != '\0' && !cambiarTokenEstado()) {
             if (Character.isWhitespace(caracterActual)) {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                 avanzarCaracter();
             } else if (caracterActual == '{') {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("{"));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("{", "{", "{", "CSS", " " ));
                 avanzarCaracter();
             } else if (caracterActual == '}') {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("}"));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("}", "}", "}", "CSS", " "));
                 avanzarCaracter();
             } else if (caracterActual == '.') {
                 identificadorSelectorClase();
             } else if (caracterActual == '#') {
                 identificadorSelectorID();
             } else if (caracterActual == '\'') {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("'"));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("'", "'", "'", "CSS", " "));
                 leerCadena();
             } else if (Character.isDigit(caracterActual)) {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(String.valueOf(caracterActual)));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(String.valueOf(caracterActual), String.valueOf(caracterActual),String.valueOf(caracterActual),"CSS" , " "));
                 avanzarCaracter();
             } else {
                 identificarSelectorEtiqueta();
@@ -93,11 +93,11 @@ public class AnalizadorLexicoCss {
         for (int i = 0; i < selectores.length; i++) {
             if (texto.toString().equals(selectores[i])) {
                 buscarSelectorEnReglas = false;
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString()));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString(), texto.toString(), texto.toString(), "CSS", "Etiqueta"));
                 System.out.println("El selector ETIQUETA es: " + selectores[i]);
                 if (caracterActual == ' ') {
                     avanzarCaracter();
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                     avanzarEspaciosEnBlanco();
                     identificarSelectorCombinador();
                 }
@@ -117,11 +117,11 @@ public class AnalizadorLexicoCss {
         for (int i = 0; i < reglas.length; i++) {
             if (texto.equals(reglas[i])) {
                 buscarSelectorEnOtros = false;
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(reglas[i]));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(reglas[i],reglas[i],reglas[i],"CSS","Regla"));
                 System.out.println("El selector REGLAS es: " + texto);
                 if (caracterActual == ' ') {
                     avanzarCaracter();
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                     avanzarEspaciosEnBlanco();
                     identificarSelectorCombinador();
                 }
@@ -143,16 +143,16 @@ public class AnalizadorLexicoCss {
         for (int i = 0; i < otros.length; i++) {
             if (texto.equals(otros[i])) {
                 buscarSelectorEnIdentificadores = false;
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto,texto,texto,"CSS","Otros"));
                 System.out.println("El selector OTROS es: " + texto);
                 avanzarCaracter();//avanza el ultimo caracter de los selectores otros
                 if (caracterActual == ' ') {
                     avanzarCaracter();
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                     avanzarEspaciosEnBlanco();
                     identificarSelectorCombinador();
                 } else if (caracterActual == '\n') {
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("\n"));
+                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("\n", "\n", "\n"," ", " "));
                     avanzarCaracter();//avanza el caracter '\n'
                 }
                 break;
@@ -162,11 +162,11 @@ public class AnalizadorLexicoCss {
             Pattern patron = Pattern.compile(EXPRESION_REGULAR_IDENTIFICADOR);
             Matcher igualador = patron.matcher(texto.toString());
             if (igualador.matches()) {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto, texto, "[a-z]+[0-9]*(-([a-z]|[0-9])+)*", "CSS", "Identificador"));
                 System.out.println("El selector (tipo identificador) es: " + texto);
                 if (caracterActual == ' ') {
                     avanzarCaracter();
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                   controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                     avanzarEspaciosEnBlanco();
                     identificarSelectorCombinador();
                 }
@@ -185,11 +185,11 @@ public class AnalizadorLexicoCss {
         Pattern patron = Pattern.compile(EXPRESION_REGULAR_SELECTOR_CLASE);
         Matcher igualador = patron.matcher(texto.toString());
         if (igualador.matches()) {
-            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString()));
+            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString(),texto.toString(),"^\\.[a-z][a-z0-9-]*$","CSS","Selector Clase"));
             System.out.println("El selector CLASE es: " + texto.toString());
             if (caracterActual == ' ') {
                 avanzarCaracter();
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                 avanzarEspaciosEnBlanco();
                 identificarSelectorCombinador();
             }
@@ -209,11 +209,11 @@ public class AnalizadorLexicoCss {
         Matcher igualador = patron.matcher(texto.toString());
         if (igualador.matches()) {
             buscarEnColores = false;
-            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString()));
+            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(texto.toString(),texto.toString(),"^\\#[a-z][a-z0-9-]*$","CSS","Selector ID"));
             System.out.println("El selector ID es: " + texto.toString());
             if (caracterActual == ' ') {
                 avanzarCaracter();
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                 avanzarEspaciosEnBlanco();
                 identificarSelectorCombinador();
             }
@@ -226,11 +226,11 @@ public class AnalizadorLexicoCss {
     private void identificarSelectorCombinador() {
         for (int i = 0; i < combinadores.length; i++) {
             if (combinadores[i].equals(String.valueOf(caracterActual))) {
-                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(combinadores[i]));
+                controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(combinadores[i], combinadores[i],combinadores[i],"CSS", "Combinador"));
                 System.out.println("El selector COMBINADOR es: " + combinadores[i]);
                 if (caracterActual == ' ') {
                     avanzarCaracter();
-                    controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(" "));
+                    controladorTokenEstado.getListaTokensHTML().agregarElemento(new Token(" ", "Espacio_en_blanco", " ", "CSS", " "));
                     avanzarEspaciosEnBlanco();
                 }
                 break;
@@ -245,10 +245,10 @@ public class AnalizadorLexicoCss {
             cadena.append(caracterActual);
             avanzarCaracter();
         }
-        controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(cadena.toString()));
+        controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token(cadena.toString(),"Cadena","Cadena", "CSS", "Cadena"));
         System.out.println("La cadena almacenada es: " + cadena.toString());
         if (caracterActual == '\'') {
-            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("'"));
+            controladorTokenEstado.getListaEnlazadaCSS().agregarElemento(new Token("'", "'", "'", "CSS", "Cadena"));
             avanzarCaracter();//avanza el caracter "'"
         }
     }

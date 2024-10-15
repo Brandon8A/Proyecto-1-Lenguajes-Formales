@@ -57,26 +57,8 @@ public class ControladorTokenEstado {
                         analizadorLexicoCss.analizarCodigoCss();
                     } else {
                         System.out.println("El token estado es: JS");
+                        
                     }
-//                    if (caracterActual == '\n') {
-//                        System.out.println("Hay un salto de linea");
-//                        for (int i = 0; i < 5; i++) {
-//                            System.out.print(caracterActual + "HOLA");
-//                        }
-//                        avanzarCaracter();
-//                        if (caracterActual == '\t') {
-//                            int cantidadTabulaciones = 0;
-//                            while (caracterActual != '\0') {                                
-//                                if (caracterActual == '\t') {
-//                                    cantidadTabulaciones++;
-//                                    avanzarCaracter();
-//                                }
-//                            }
-//                            System.out.println("Tabulaciones: "+cantidadTabulaciones);
-//                        }
-//                    }else{
-//                        System.out.println("No hay salto de linea");
-//                    }
                 } else {
                     avanzarCaracter();
                     System.out.println("NO hay doble signo menor");
